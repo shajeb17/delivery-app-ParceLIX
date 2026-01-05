@@ -32,10 +32,13 @@ let card = [
 
   
   return (
-    <Container className="flex gap-3 my-10">
+    <Container className=" my-10">
+      <h1 className="text-[22px] font-semibold text-black/70">How it Works</h1>
+      <div className="flex gap-3 my-2">
       {card?.map((data,index)=>(
         <WorkInfo key={index} data={data}></WorkInfo>
       ))}
+      </div>
     </Container>
   );
 };

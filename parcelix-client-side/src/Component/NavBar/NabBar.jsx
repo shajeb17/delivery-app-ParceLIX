@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "../../assets/logo.png";
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
 
 const NabBar = () => {
   const navlink = (
@@ -24,8 +24,8 @@ const NabBar = () => {
       </div>
       <div className="navbar-center hidden lg:flex">{navlink}</div>
       <div className="navbar-end flex gap-3">
-        <div className="border border-black/10 rounded px-5 py-2 font-semibold text-[15px] text-black/90]">Sign In</div>
-        <div className="border border-white/80 font-semibold text-[15px]  rounded px-5 py-2 gradient-background">Sign Up</div>
+        <Link to={"login"} className="border border-black/10 rounded px-5 py-2 font-semibold text-[15px] text-black/90]">Sign In</Link>
+        <Link to={"signup"} className="border border-white/80 font-semibold text-[15px]  rounded px-5 py-2 gradient-background">Sign Up</Link>
       </div>
     </div>
   );

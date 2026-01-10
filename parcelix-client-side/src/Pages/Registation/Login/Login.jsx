@@ -1,11 +1,30 @@
-import React from "react";
+import React, { useContext } from "react";
 import Container from "../../../Component/Container/Container";
 import authImg from "../../../assets/authImage.png";
 import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { AuthContext } from "../../../Component/Context/FormContext/AuthContext";
+import { toast } from "react-toastify";
 const Signin = () => {
+  const { signinUser } = useContext(AuthContext);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm();
+  const onSubmit = (data) => {
+    let { email, password } = data;
+    try {
+      signinUser(email, password);
+      toast.success("user logged in successfully");
+      reset()
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
   return (
-        <Container className="min-h-screen flex my-11">
-      {/* LEFT SIDE - FORM */}
+    <Container className="min-h-screen flex my-11">
       <div className="w-full md:w-1/2 rounded-[80px] flex items-center justify-center bg-white">
         <div className="w-full max-w-md p-1 mt-3">
           <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center">
@@ -15,25 +34,35 @@ const Signin = () => {
             wealcome back! Please enter your details.
           </p>
 
-          <form className="space-y-4">
-        
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label className="text-sm text-gray-600">Email</label>
               <input
                 type="email"
                 placeholder="Add your email"
                 className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                {...register("email", { required: true })}
               />
+              {errors.email && (
+                <span className="text-red-500 capitalize">
+                  please enter your email
+                </span>
+              )}
             </div>
 
-    
             <div>
               <label className="text-sm text-gray-600">Password</label>
               <input
                 type="password"
                 placeholder="Create a strong password"
                 className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                {...register("password", { required: true, minLength: 6 })}
               />
+              {errors.password && (
+                <span className="text-red-500 capitalize">
+                  password must be at least 6 characters
+                </span>
+              )}
             </div>
             <button
               type="submit"
@@ -97,7 +126,12 @@ const Signin = () => {
           </div>
           <p className="text-sm text-center text-gray-500 mt-4 mb-2.5">
             I Don't have an account?{" "}
-            <Link to={"/signup"} className="gradient-text cursor-pointer font-bold">Sign up</Link>
+            <Link
+              to={"/signup"}
+              className="gradient-text cursor-pointer font-bold"
+            >
+              Sign up
+            </Link>
           </p>
         </div>
       </div>

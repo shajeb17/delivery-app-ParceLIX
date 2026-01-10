@@ -1,8 +1,62 @@
-import React from "react";
+import React, { use, useState } from "react";
 import Container from "../../../Component/Container/Container";
 import authImg from "../../../assets/authImage.png";
 import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { AuthContext } from "../../../Component/Context/FormContext/AuthContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { updateProfile } from "firebase/auth";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 const SignUp = () => {
+  let { googleSignIn, createUser } = use(AuthContext);
+  let  [eyeOpen,setEyeOpen]=useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+  const onSubmit = async (data) => {
+    let { email, password, fullName, image } = data;
+    try {
+      const img = image[0];
+      const fomrData = new FormData();
+      fomrData.append("image", img);
+      const myImage = await axios.post(
+        `${import.meta.env.VITE_IMAGEBD_API}`,
+        fomrData
+      );
+      if (!myImage.data?.data?.display_url) {
+        toast.error("Image upload failed");
+        return;
+      }
+      let fullUrl = myImage?.data?.data?.display_url;
+
+      let result=await createUser(email, password);
+      let profile={
+        displayName: fullName,
+        photoURL: fullUrl,
+      }
+      await updateProfile(result.user,profile);
+      toast.success("user created successfully")
+      reset()
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        toast.error("Email already exists");
+      } else if (error.code === "auth/weak-password") {
+        toast.error("Password must be at least 6 characters");
+      } else if (error.response) {
+        toast.error("Image upload error");
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
+  };
+  let googleLogin = () => {
+    googleSignIn();
+  };
   return (
     <Container className="min-h-screen flex my-11">
       {/* LEFT SIDE - FORM */}
@@ -15,14 +69,20 @@ const SignUp = () => {
             Join us and start your journey
           </p>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label className="text-sm text-gray-600">Full Name</label>
               <input
                 type="text"
                 placeholder="Please enter your full name"
                 className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                {...register("fullName", { required: true })}
               />
+              {errors.fullName && (
+                <span className="text-red-500 capitalize">
+                  please enter your name
+                </span>
+              )}
             </div>
 
             <div>
@@ -31,7 +91,13 @@ const SignUp = () => {
                 type="email"
                 placeholder="Add your email"
                 className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                {...register("email", { required: true })}
               />
+              {errors.email && (
+                <span className="text-red-500 capitalize">
+                  please enter your email
+                </span>
+              )}
             </div>
 
             <div>
@@ -39,15 +105,27 @@ const SignUp = () => {
               <input
                 type="file"
                 className="file-input w-full rounded-xl border border-amber-950"
+                {...register("image")}
               />
             </div>
-            <div>
+            <div className="relative">
               <label className="text-sm text-gray-600">Password</label>
               <input
-                type="password"
+                type={eyeOpen?"text":"password"}
                 placeholder="Create a strong password"
                 className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                {...register("password", { required: true, minLength: 6 })}
               />
+              <div className="absolute right-4 top-10" onClick={()=>setEyeOpen(!eyeOpen)}>
+                {eyeOpen?<FaRegEye />:<FaRegEyeSlash></FaRegEyeSlash>}
+                
+                
+                </div>
+              {errors.password && (
+                <span className="text-red-500 capitalize">
+                  password must be at least 6 characters
+                </span>
+              )}
             </div>
             <button
               type="submit"
@@ -63,7 +141,10 @@ const SignUp = () => {
             <div className="w-full border border-black/10"></div>
           </div>
           <div className="flex  gap-2.5 items-center justify-center mt-6">
-            <button className="btn bg-white  text-black border-[#e5e5e5]">
+            <button
+              onClick={googleLogin}
+              className="btn bg-white  text-black border-[#e5e5e5]"
+            >
               <svg
                 aria-label="Google logo"
                 width="16"
@@ -111,7 +192,12 @@ const SignUp = () => {
           </div>
           <p className="text-sm text-center text-gray-500 mt-4 mb-2.5">
             Already have an account?{" "}
-            <Link to={"/sigin"} className="gradient-text font-bold cursor-pointer">Sign In</Link>
+            <Link
+              to={"/login"}
+              className="gradient-text font-bold cursor-pointer"
+            >
+              Sign In
+            </Link>
           </p>
         </div>
       </div>

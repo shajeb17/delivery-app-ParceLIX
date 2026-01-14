@@ -1,27 +1,35 @@
 import React, { useContext } from "react";
 import Container from "../../../Component/Container/Container";
 import authImg from "../../../assets/authImage.png";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../../Component/Context/FormContext/AuthContext";
 import { toast } from "react-toastify";
 const Signin = () => {
-  const { signinUser } = useContext(AuthContext);
+  const { signinUser,googleSignIn } = useContext(AuthContext);
+  let location = useLocation();
+  let navigate=useNavigate()
+  
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset
   } = useForm();
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
     let { email, password } = data;
     try {
-      signinUser(email, password);
+      await signinUser(email, password);
+      navigate(location?.state || "/", { replace: true });
       toast.success("user logged in successfully");
       reset()
     } catch (error) {
       toast.error(error.message);
     }
+  };
+    let googleLogin = async() => {
+    await googleSignIn();
+    navigate(location?.state || "/", { replace: true });
   };
   return (
     <Container className="min-h-screen flex my-11">
@@ -78,7 +86,7 @@ const Signin = () => {
             <div className="w-full border border-black/10"></div>
           </div>
           <div className="flex  gap-2.5 items-center justify-center mt-6">
-            <button className="btn bg-white  text-black border-[#e5e5e5]">
+            <button onClick={googleLogin} className="btn bg-white  text-black border-[#e5e5e5]">
               <svg
                 aria-label="Google logo"
                 width="16"

@@ -1,7 +1,7 @@
 import React, { use, useState } from "react";
 import Container from "../../../Component/Container/Container";
 import authImg from "../../../assets/authImage.png";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../../Component/Context/FormContext/AuthContext";
 import axios from "axios";
@@ -10,7 +10,9 @@ import { updateProfile } from "firebase/auth";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 const SignUp = () => {
   let { googleSignIn, createUser } = use(AuthContext);
-  let  [eyeOpen,setEyeOpen]=useState(false)
+  let [eyeOpen, setEyeOpen] = useState(false);
+  let location = useLocation();
+  let navigate = useNavigate();
 
   const {
     register,
@@ -33,15 +35,15 @@ const SignUp = () => {
         return;
       }
       let fullUrl = myImage?.data?.data?.display_url;
-
-      let result=await createUser(email, password);
-      let profile={
+      let result = await createUser(email, password);
+      let profile = {
         displayName: fullName,
         photoURL: fullUrl,
-      }
-      await updateProfile(result.user,profile);
-      toast.success("user created successfully")
-      reset()
+      };
+      await updateProfile(result.user, profile);
+      navigate(location?.state || "/", { replace: true });
+      toast.success("user created successfully");
+      reset();
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         toast.error("Email already exists");
@@ -54,8 +56,9 @@ const SignUp = () => {
       }
     }
   };
-  let googleLogin = () => {
-    googleSignIn();
+  let googleLogin = async () => {
+    await googleSignIn();
+    navigate(location?.state || "/", { replace: true });
   };
   return (
     <Container className="min-h-screen flex my-11">
@@ -111,16 +114,17 @@ const SignUp = () => {
             <div className="relative">
               <label className="text-sm text-gray-600">Password</label>
               <input
-                type={eyeOpen?"text":"password"}
+                type={eyeOpen ? "text" : "password"}
                 placeholder="Create a strong password"
                 className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 {...register("password", { required: true, minLength: 6 })}
               />
-              <div className="absolute right-4 top-10" onClick={()=>setEyeOpen(!eyeOpen)}>
-                {eyeOpen?<FaRegEye />:<FaRegEyeSlash></FaRegEyeSlash>}
-                
-                
-                </div>
+              <div
+                className="absolute right-4 top-10"
+                onClick={() => setEyeOpen(!eyeOpen)}
+              >
+                {eyeOpen ? <FaRegEye /> : <FaRegEyeSlash></FaRegEyeSlash>}
+              </div>
               {errors.password && (
                 <span className="text-red-500 capitalize">
                   password must be at least 6 characters

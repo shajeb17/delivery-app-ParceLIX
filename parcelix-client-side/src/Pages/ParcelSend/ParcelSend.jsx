@@ -2,27 +2,76 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Container from "../../Component/Container/Container";
 import axios from "axios";
-import { data } from "react-router";
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
+import DeliveryPriceTooltip from "../../Utils/DeliveryPriceTooltip";
+import Swal from "sweetalert2";
 
 const ParcelSend = () => {
   let [region, setRegion] = useState([]);
   const [allData, setAllData] = useState([]);
   const [districts, setDistricts] = useState([]);
-  let [reciver,setReciverDist]=useState([])
+  let [reciver, setReciverDist] = useState([]);
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
     reset,
+    setValue,
   } = useForm();
 
   const selectedRegion = watch("sendRegion");
   const reciverRegion = watch("reciverRegion");
-  
-  
+
   const onSubmit = (data) => {
-    console.log("Parcel Data:", data);
+    const {
+      docType,
+      parcelName,
+      receiverAddress,
+      receiverName,
+      receiverPhone,
+      reciverDistrict,
+      reciverRegion,
+      sendRegion,
+      senderAddress,
+      senderDistrict,
+      senderName,
+      senderPhone,
+      weight,
+    } = data;
+    let districtCheck = senderDistrict === reciverDistrict;
+    let Parcelweight = parseFloat(weight);
+    let price = 0;
+    if (docType === "document") {
+      price = districtCheck ? 60 : 80;
+    } else {
+      if (Parcelweight <= 3) {
+        price = districtCheck ? 110 : 150;
+      } else {
+        price = districtCheck
+          ? 110 + (Parcelweight - 3) * 40
+          : 150 + (Parcelweight - 3) * 40 + 40;
+      }
+    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Your Parcel delivery Money ${price} TK`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "i agree!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Success!",
+          text: "Your all details successfully deploy",
+          icon: "success",
+        });
+      }
+    });
+    console.log(price);
   };
   useEffect(() => {
     axios.get("/serviceCenter.json").then((res) => {
@@ -34,20 +83,22 @@ const ParcelSend = () => {
   }, []);
 
   useEffect(() => {
-    if(selectedRegion){
-      let allDistrict=allData?.filter(reg=>reg.region===selectedRegion)
-      let selectDistrict=allDistrict.map(dis=>dis.district)
-       setDistricts(selectDistrict)
+    if (selectedRegion) {
+      let allDistrict = allData?.filter((reg) => reg.region === selectedRegion);
+      let selectDistrict = allDistrict.map((dis) => dis.district);
+      setDistricts(selectDistrict);
+      setValue("senderDistrict", "");
     }
-  }, [selectedRegion, allData]);
+  }, [selectedRegion, allData, setValue]);
 
   useEffect(() => {
-    if(reciverRegion){
-      let allDistrict=allData?.filter(reg=>reg.region===reciverRegion)
-      let selectDistrict=allDistrict.map(dis=>dis.district)
-       setReciverDist(selectDistrict)
+    if (reciverRegion) {
+      let allDistrict = allData?.filter((reg) => reg.region === reciverRegion);
+      let selectDistrict = allDistrict.map((dis) => dis.district);
+      setReciverDist(selectDistrict);
+      setValue("reciverDistrict", "");
     }
-  }, [reciverRegion, allData]);
+  }, [reciverRegion, allData, setValue]);
 
   return (
     <Container className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -61,6 +112,42 @@ const ParcelSend = () => {
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
+          {/* {radion info} */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-7 font-bold text-black/50 mt-5">
+              <div className="flex items-center gap-1.5">
+                <label htmlFor="document">Document</label>
+                <input
+                  id="document"
+                  name="docType"
+                  value="document"
+                  type="radio"
+                  {...register("docType", { required: true })}
+                />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <label htmlFor="non-document">Non Document</label>
+                <input
+                  id="non-document"
+                  name="docType"
+                  type="radio"
+                  value="non-document"
+                  {...register("docType", { required: true })}
+                />
+              </div>
+            </div>
+            {/* <div className="capitalize font-bold text-black/50 cursor-pointer">
+              <a
+                data-tooltip-id="my-tooltip"
+                data-tooltip-content=" wHelloorld!"
+                data-tooltip-place="top"
+              >
+                parcel delivery price
+              </a>
+              <Tooltip id="my-tooltip" />
+            </div> */}
+            <DeliveryPriceTooltip></DeliveryPriceTooltip>
+          </div>
           {/* PARCEL INFO */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             <div className="flex flex-col">
@@ -130,7 +217,7 @@ const ParcelSend = () => {
                   className="select"
                   {...register("sendRegion", { required: true })}
                 >
-                  <option disabled={true}>Sender Region</option>
+                  <option disabled>Sender Region</option>
                   {region?.map((dis) => (
                     <option key={dis} value={dis}>
                       {dis}
@@ -143,7 +230,9 @@ const ParcelSend = () => {
                   className="select"
                   {...register("senderDistrict", { required: true })}
                 >
-                  <option disabled={true}>Sender District</option>
+                  <option value="" disabled>
+                    Sender District
+                  </option>
                   {districts?.map((dis) => (
                     <option key={dis} value={dis}>
                       {dis}
@@ -181,8 +270,6 @@ const ParcelSend = () => {
                   })}
                 />
 
-         
-
                 <select
                   defaultValue="Reciver Region"
                   className="select"
@@ -196,12 +283,14 @@ const ParcelSend = () => {
                   ))}
                 </select>
 
-                 <select
+                <select
                   defaultValue="Reciver District"
                   className="select"
                   {...register("reciverDistrict", { required: true })}
                 >
-                  <option disabled={true}>Reciver District</option>
+                  <option value="" disabled>
+                    Reciver District
+                  </option>
                   {reciver?.map((dis) => (
                     <option key={dis} value={dis}>
                       {dis}

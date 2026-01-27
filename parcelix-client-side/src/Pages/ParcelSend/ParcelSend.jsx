@@ -6,12 +6,16 @@ import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import DeliveryPriceTooltip from "../../Utils/DeliveryPriceTooltip";
 import Swal from "sweetalert2";
+import useAxious from "../../Utils/CustomHook/useAxious";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ParcelSend = () => {
   let [region, setRegion] = useState([]);
   const [allData, setAllData] = useState([]);
   const [districts, setDistricts] = useState([]);
   let [reciver, setReciverDist] = useState([]);
+  const axiousLink = useAxious();
+
   const {
     register,
     handleSubmit,
@@ -20,6 +24,32 @@ const ParcelSend = () => {
     reset,
     setValue,
   } = useForm();
+
+  const queryClient = useQueryClient();
+
+  const parcelMutation = useMutation({
+    mutationFn: (parcelData) => axiousLink.post("/users", parcelData),
+  
+    
+    onSuccess: () => {
+      Swal.fire({
+        title: "Success!",
+        text: "Your all details successfully deploy",
+        icon: "success",
+      });
+
+      reset(); 
+      queryClient.invalidateQueries(["users"]);
+    },
+
+    onError: () => {
+      Swal.fire({
+        title: "Error!",
+        text: "Something went wrong",
+        icon: "error",
+      });
+    },
+  });
 
   const selectedRegion = watch("sendRegion");
   const reciverRegion = watch("reciverRegion");
@@ -54,6 +84,7 @@ const ParcelSend = () => {
           : 150 + (Parcelweight - 3) * 40 + 40;
       }
     }
+    data.deliveryPrice = price;
     Swal.fire({
       title: "Are you sure?",
       text: `Your Parcel delivery Money ${price} TK`,
@@ -64,14 +95,19 @@ const ParcelSend = () => {
       confirmButtonText: "i agree!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Success!",
-          text: "Your all details successfully deploy",
-          icon: "success",
-        });
+        // axiousLink.post("/users", data)
+        // .then(res=>console.log(res)
+        // ).catch(e=>console.log(e)
+        // )
+        // Swal.fire({
+        //   title: "Success!",
+        //   text: "Your all details successfully deploy",
+        //   icon: "success",
+        // });
+
+        parcelMutation.mutate(data);
       }
     });
-    console.log(price);
   };
   useEffect(() => {
     axios.get("/serviceCenter.json").then((res) => {

@@ -29,8 +29,7 @@ const ParcelSend = () => {
 
   const parcelMutation = useMutation({
     mutationFn: (parcelData) => axiousLink.post("/users", parcelData),
-  
-    
+
     onSuccess: () => {
       Swal.fire({
         title: "Success!",
@@ -38,7 +37,7 @@ const ParcelSend = () => {
         icon: "success",
       });
 
-      reset(); 
+      reset();
       queryClient.invalidateQueries(["users"]);
     },
 
@@ -137,8 +136,8 @@ const ParcelSend = () => {
   }, [reciverRegion, allData, setValue]);
 
   return (
-    <Container className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-lg p-6">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 my-10 mx-20 max-[1000px]:mx-4">
+      <div className="bg-white w-full  rounded-2xl shadow-lg p-6">
         <h1 className="text-center text-3xl font-extrabold pb-9 text-black/70">
           Send A Parcel
         </h1>
@@ -149,41 +148,35 @@ const ParcelSend = () => {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* {radion info} */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-7 font-bold text-black/50 mt-5">
-              <div className="flex items-center gap-1.5">
-                <label htmlFor="document">Document</label>
-                <input
-                  id="document"
-                  name="docType"
-                  value="document"
-                  type="radio"
-                  {...register("docType", { required: true })}
-                />
+
+            <div className="flex items-center justify-between mt-5 max-[625px]:flex-col-reverse max-[625px]:items-start max-[625px]:gap-6">
+              <div className="flex items-center gap-7 font-bold text-black/50  max-[780px]:flex-col max-[780px]:gap-1.5 max-[780px]:items-start">
+                <div className="flex items-center gap-1.5">
+                  <label htmlFor="document">Document</label>
+                  <input
+                    id="document"
+                    name="docType"
+                    value="document"
+                    type="radio"
+                    {...register("docType", { required: true })}
+                  />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <label htmlFor="non-document">Non Document</label>
+                  <input
+                    id="non-document"
+                    name="docType"
+                    type="radio"
+                    value="non-document"
+                    {...register("docType", { required: true })}
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <label htmlFor="non-document">Non Document</label>
-                <input
-                  id="non-document"
-                  name="docType"
-                  type="radio"
-                  value="non-document"
-                  {...register("docType", { required: true })}
-                />
+              <div className="relative z-50">
+                <DeliveryPriceTooltip></DeliveryPriceTooltip>
               </div>
             </div>
-            {/* <div className="capitalize font-bold text-black/50 cursor-pointer">
-              <a
-                data-tooltip-id="my-tooltip"
-                data-tooltip-content=" wHelloorld!"
-                data-tooltip-place="top"
-              >
-                parcel delivery price
-              </a>
-              <Tooltip id="my-tooltip" />
-            </div> */}
-            <DeliveryPriceTooltip></DeliveryPriceTooltip>
-          </div>
+
           {/* PARCEL INFO */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             <div className="flex flex-col">
@@ -346,7 +339,7 @@ const ParcelSend = () => {
           </button>
         </form>
       </div>
-    </Container>
+    </div>
   );
 };
 

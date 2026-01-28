@@ -35,18 +35,18 @@ async function run() {
       let result = await cursor.toArray();
       res.send(result);
     });
-    app.get("/users/:id" , async(req,res)=>{
-      let params=req.params.id
-      let query={_id:new ObjectId(params)}
-      let result= await mongoUsers.findOne(query)
-      res.send(result)
-    })
-    app.delete("/users/:id", async(req,res)=>{
-       let id=req.params.id
-       let query={_id:new ObjectId(id)}
-       let result=await mongoUsers.deleteOne(query)
-       res.send(result)
-    })
+    app.get("/users/:id", async (req, res) => {
+      let params = req.params.id;
+      let query = { _id: new ObjectId(params) };
+      let result = await mongoUsers.findOne(query);
+      res.send(result);
+    });
+    app.delete("/users/:id", async (req, res) => {
+      let id = req.params.id;
+      let query = { _id: new ObjectId(id) };
+      let result = await mongoUsers.deleteOne(query);
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(

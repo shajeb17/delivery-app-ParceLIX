@@ -1,17 +1,26 @@
 import heroImg from "../../../assets/big-deliveryman.png"; // right side image
 import Container from "../../../Component/Container/Container";
+import { Typewriter } from 'react-simple-typewriter'
 
 const Hero = () => {
   return (
     <section className="bg-white">
-      <Container className="py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-        
+      <Container className="py-20 max-[500px]:py-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         {/* LEFT CONTENT */}
         <div>
-          <h1 className="text-[50px] lg:text-5xl font-bold text-[#083c40] leading-tight">
+          <h1 className="text-[50px] max-[615px]:text-4xl max-[500px]:text-3xl lg:text-5xl font-bold text-[#083c40] leading-tight">
             We Make Sure Your <br />
             <span className="gradient-text">Parcel Arrives</span> On Time
-            <br />— No Fuss.
+            <br />
+            <Typewriter
+              cursor
+              cursorBlinking
+              delaySpeed={1000}
+              deleteSpeed={25}
+              loop={0}
+              typeSpeed={120}
+              words={[ "Welcome to", " — No Fuss."]}
+            />
           </h1>
 
           <p className="text-gray-500 mt-6 max-w-lg">
@@ -21,7 +30,7 @@ const Hero = () => {
           </p>
 
           {/* BUTTONS */}
-          <div className="flex gap-4 mt-8">
+          <div className="flex gap-4 mt-8 max-[500px]:grid max-[500px]:grid-cols-1">
             <button className="px-6 py-3 rounded-full gradient-background text-white font-semibold hover:bg-lime-500 transition">
               Track Your Parcel →
             </button>

@@ -15,7 +15,7 @@ const Coverage = () => {
     e.preventDefault();
     let searchRes = e.target.text.value;
     let district = serviceCenter.find((res) =>
-      res.district.toLowerCase().includes(searchRes.toLowerCase())
+      res.district.toLowerCase().includes(searchRes.toLowerCase()),
     );
     if (district) {
       let cord = [district.latitude, district.longitude];
@@ -24,7 +24,7 @@ const Coverage = () => {
   };
 
   return (
-    <Container>
+    <Container className="z-0">
       <h1 className="text-2xl mt-6 capitalize font-semibold text-black/70">
         we are available in 64 districts
       </h1>
@@ -37,18 +37,18 @@ const Coverage = () => {
           placeholder="Wright your district name"
           className="outline-none border-none text-[17px] bg-white/90 px-1.5 py-[7px] rounded"
         />
-        <button className="absolute left-[200px] border border-white/80 font-semibold text-[15px]  rounded px-5 py-2 gradient-background">
+        <button className="absolute left-50 border border-white/80 font-semibold text-[15px]  rounded px-5 py-2 gradient-background">
           click me
         </button>
       </form>
 
-      <div className="my-9">
+      <div className="my-9 relative z-0">
         <MapContainer
           center={position}
           zoom={6.5}
           scrollWheelZoom={false}
           className="w-full h-125"
-           ref={mapRef}
+          ref={mapRef}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

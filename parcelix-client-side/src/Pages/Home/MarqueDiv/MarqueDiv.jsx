@@ -17,16 +17,16 @@ const MarqueDiv = () => {
 
       <div className="relative overflow-hidden mt-4">
         <Marquee pauseOnHover={true}>
-          <div className="flex items-center justify-center h-10 gap-7">
-            <img src={amazonvec} alt="" className="w-22" />
-            <img src={casio} alt="" className="w-22" />
-            <img src={moonstar} alt="" className="w-22" />
-            <img src={randstad} alt="" className="w-22" />
-            <img src={star} alt="" className="w-22" />
-            <img src={starpeople} alt="" className="w-22" />
-            <img src={amazonvec} alt="" className="w-22" />
-            <img src={casio} alt="" className="w-22" />
-            <img src={moonstar} alt="" className="w-22" />
+          <div className="flex items-center justify-center h-10 gap-7 max-[500px]:gap-3">
+            <img src={amazonvec} alt="" className="w-22  max-[500px]:w-18" />
+            <img src={casio} alt="" className="w-22 max-[500px]:w-18" />
+            <img src={moonstar} alt="" className="w-22 max-[500px]:w-18" />
+            <img src={randstad} alt="" className="w-22 max-[500px]:w-18" />
+            <img src={star} alt="" className="w-22 max-[500px]:w-18" />
+            <img src={starpeople} alt="" className="w-22 max-[500px]:w-18" />
+            <img src={amazonvec} alt="" className="w-22 max-[500px]:w-18" />
+            <img src={casio} alt="" className="w-22 max-[500px]:w-18" />
+            <img src={moonstar} alt="" className="w-22 max-[500px]:w-18" />
           </div>
         </Marquee>
 

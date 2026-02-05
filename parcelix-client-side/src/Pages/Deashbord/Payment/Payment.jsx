@@ -7,7 +7,7 @@ import { AuthContext } from "../../../Component/Context/FormContext/AuthContext"
 const Payment = () => {
   const { id } = useParams();
   const { useInfo } = useContext(AuthContext);
-
+  
   const axiousLink = useAxious();
   const { data } = useQuery({
     queryKey: ["singelUser", id],

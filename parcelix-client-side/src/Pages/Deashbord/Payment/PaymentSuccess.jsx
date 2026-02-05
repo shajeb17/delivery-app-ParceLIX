@@ -4,7 +4,7 @@ import useAxious from "../../../Utils/CustomHook/useAxious";
 
 const PaymentSuccess = () => {
   const [getParams] = useSearchParams();
-  const axiousLink = useAxious();
+  const axiousLink = useAxious(); 
   const fullParams = getParams.get("session_id");
 
 

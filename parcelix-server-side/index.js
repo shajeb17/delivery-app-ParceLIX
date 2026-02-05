@@ -8,6 +8,11 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+function generateTrackingId() {
+  const random = Math.floor(Math.random() * 100000);
+  return `TRK-${Date.now()}-${random}`;
+}
+
 const uri = process.env.MONGODB_URL;
 const stripe = require("stripe")(process.env.STRIPE_KYE);
 
@@ -23,6 +28,7 @@ async function run() {
     await client.connect();
     const parcelix = client.db("parcelix");
     const mongoUsers = parcelix.collection("users");
+    const payment = parcelix.collection("paymentCollection");
     // Send a ping to confirm a successful connection
 
     app.post("/users", async (req, res) => {
@@ -44,7 +50,6 @@ async function run() {
     });
     app.post("/payment-checkout", async (req, res) => {
       const data = req.body;
-
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [
@@ -69,24 +74,53 @@ async function run() {
       res.json({ url: session.url });
     });
     app.patch("/payment-success", async (req, res) => {
-      let params = req.query.session_id;
-      const session = await stripe.checkout.sessions.retrieve(params);
-      console.log(session);
+      const sessionId = req.query.session_id;
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-      if (session.payment_status === "paid") {
-         const id=session.metadata.plantId
-         const query={_id:new ObjectId(id)}
-         const update={
-           $set:{
-              paymentStatus:"paid"
-           }
-         }
-         const result=await mongoUsers.updateOne(query,update)
-         res.send({ success: true, result });
-      } else {
-        res.send({ success: false });
+      if (session.payment_status !== "paid") {
+        return res.send({ success: false });
       }
+
+      const trackingId = generateTrackingId();
+      const plantId = session.metadata.plantId;
+
+      await mongoUsers.updateOne(
+        { _id: new ObjectId(plantId) },
+        {
+          $set: {
+            paymentStatus: "paid",
+            trackingId: trackingId,
+          },
+        },
+      );
+
+      const alreadyPaid = await payment.findOne({
+        transactionId: session.payment_intent,
+      });
+
+      if (!alreadyPaid) {
+        await payment.insertOne({
+          customerEmail: session.customer_email,
+          plantId: plantId,
+          paymentStatus: session.payment_status,
+          currency: session.currency,
+          transactionId: session.payment_intent,
+          paymentAmount: session.amount_total,
+          paymentDate: new Date(),
+          trackingId: trackingId,
+        });
+      }
+
+      res.send({
+        success: true,
+        trackingId,
+      });
     });
+    app.get("/paymentHistory" , async (req,res)=>{
+       const cursor=await payment.find().toArray()
+       res.send(cursor)
+    })
+
     app.delete("/users/:id", async (req, res) => {
       let id = req.params.id;
       let query = { _id: new ObjectId(id) };

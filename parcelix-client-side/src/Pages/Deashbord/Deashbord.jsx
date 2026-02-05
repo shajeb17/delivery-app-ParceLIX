@@ -86,7 +86,7 @@ const Deashbord = () => {
 
           <MenuItem
             icon={<MdOutlinePayments />}
-            component={<NavLink to="/payment-history" />}
+            component={<NavLink to="PaymentHistory" />}
           >
             Payment History
           </MenuItem>

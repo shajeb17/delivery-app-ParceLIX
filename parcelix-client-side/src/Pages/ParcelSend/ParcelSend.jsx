@@ -8,6 +8,7 @@ import DeliveryPriceTooltip from "../../Utils/DeliveryPriceTooltip";
 import Swal from "sweetalert2";
 import useAxious from "../../Utils/CustomHook/useAxious";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
 
 const ParcelSend = () => {
   let [region, setRegion] = useState([]);
@@ -15,6 +16,7 @@ const ParcelSend = () => {
   const [districts, setDistricts] = useState([]);
   let [reciver, setReciverDist] = useState([]);
   const axiousLink = useAxious();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -38,6 +40,7 @@ const ParcelSend = () => {
       });
 
       reset();
+      navigate(`/deashbord/ParcelDetails`);
       queryClient.invalidateQueries(["users"]);
     },
 
@@ -94,16 +97,6 @@ const ParcelSend = () => {
       confirmButtonText: "i agree!",
     }).then((result) => {
       if (result.isConfirmed) {
-        // axiousLink.post("/users", data)
-        // .then(res=>console.log(res)
-        // ).catch(e=>console.log(e)
-        // )
-        // Swal.fire({
-        //   title: "Success!",
-        //   text: "Your all details successfully deploy",
-        //   icon: "success",
-        // });
-
         parcelMutation.mutate(data);
       }
     });
@@ -149,33 +142,33 @@ const ParcelSend = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* {radion info} */}
 
-            <div className="flex items-center justify-between mt-5 max-[625px]:flex-col-reverse max-[625px]:items-start max-[625px]:gap-6">
-              <div className="flex items-center gap-7 font-bold text-black/50  max-[780px]:flex-col max-[780px]:gap-1.5 max-[780px]:items-start">
-                <div className="flex items-center gap-1.5">
-                  <label htmlFor="document">Document</label>
-                  <input
-                    id="document"
-                    name="docType"
-                    value="document"
-                    type="radio"
-                    {...register("docType", { required: true })}
-                  />
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <label htmlFor="non-document">Non Document</label>
-                  <input
-                    id="non-document"
-                    name="docType"
-                    type="radio"
-                    value="non-document"
-                    {...register("docType", { required: true })}
-                  />
-                </div>
+          <div className="flex items-center justify-between mt-5 max-[625px]:flex-col-reverse max-[625px]:items-start max-[625px]:gap-6">
+            <div className="flex items-center gap-7 font-bold text-black/50  max-[780px]:flex-col max-[780px]:gap-1.5 max-[780px]:items-start">
+              <div className="flex items-center gap-1.5">
+                <label htmlFor="document">Document</label>
+                <input
+                  id="document"
+                  name="docType"
+                  value="document"
+                  type="radio"
+                  {...register("docType", { required: true })}
+                />
               </div>
-              <div className="relative z-50">
-                <DeliveryPriceTooltip></DeliveryPriceTooltip>
+              <div className="flex items-center gap-1.5">
+                <label htmlFor="non-document">Non Document</label>
+                <input
+                  id="non-document"
+                  name="docType"
+                  type="radio"
+                  value="non-document"
+                  {...register("docType", { required: true })}
+                />
               </div>
             </div>
+            <div className="relative z-50">
+              <DeliveryPriceTooltip></DeliveryPriceTooltip>
+            </div>
+          </div>
 
           {/* PARCEL INFO */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">

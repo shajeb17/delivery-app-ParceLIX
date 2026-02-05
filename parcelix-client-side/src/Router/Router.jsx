@@ -11,6 +11,7 @@ import ParcelAdd from "../Pages/Deashbord/ParcelAdd/ParcelAdd";
 import ParcelDetails from "../Pages/Deashbord/ParcelDetails/ParcelDetails";
 import Payment from "../Pages/Deashbord/Payment/Payment";
 import PaymentSuccess from "../Pages/Deashbord/Payment/PaymentSuccess";
+import PaymentHistory from "../Pages/Deashbord/Payment/PaymentHistory";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
       { path: "ParcelDetails", Component: ParcelDetails },
       { path: "Payment/:id", Component: Payment },
       { path: "PaymentSuccess", Component: PaymentSuccess },
+      { path: "PaymentHistory", Component: PaymentHistory },
     ],
   },
 ]);

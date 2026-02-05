@@ -9,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 const uri = process.env.MONGODB_URL;
+const stripe = require("stripe")(process.env.STRIPE_KYE);
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -40,6 +41,51 @@ async function run() {
       let query = { _id: new ObjectId(params) };
       let result = await mongoUsers.findOne(query);
       res.send(result);
+    });
+    app.post("/payment-checkout", async (req, res) => {
+      const data = req.body;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              unit_amount: data?.deliveryPrice * 100,
+              product_data: {
+                name: data?.parcelName,
+              },
+            },
+
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        customer_email: data?.email,
+        metadata: { plantId: data?._id },
+        success_url: `http://localhost:5173/deashbord/PaymentSuccess?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `http://localhost:5173/deashbord/Payment/${data?._id}`,
+      });
+      res.json({ url: session.url });
+    });
+    app.patch("/payment-success", async (req, res) => {
+      let params = req.query.session_id;
+      const session = await stripe.checkout.sessions.retrieve(params);
+      console.log(session);
+
+      if (session.payment_status === "paid") {
+         const id=session.metadata.plantId
+         const query={_id:new ObjectId(id)}
+         const update={
+           $set:{
+              paymentStatus:"paid"
+           }
+         }
+         const result=await mongoUsers.updateOne(query,update)
+         res.send({ success: true, result });
+      } else {
+        res.send({ success: false });
+      }
     });
     app.delete("/users/:id", async (req, res) => {
       let id = req.params.id;

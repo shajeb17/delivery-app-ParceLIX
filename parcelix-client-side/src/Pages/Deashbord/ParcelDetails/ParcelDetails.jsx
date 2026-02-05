@@ -91,12 +91,16 @@ const ParcelDetails = () => {
               <p>Weight: {item.weight} kg</p>
               <div className="flex gap-2.5 items-center">
                 <p>Delivery Price: ৳{item.deliveryPrice}</p>
-                <Link
-                  to={"/deashbord/Payment"}
-                  className="gradient-background px-4.5 py-1.5 text-white font-bold rounded-md cursor-pointer"
-                >
-                  Pays
-                </Link>
+                {item.paymentStatus === "paid" ? (
+                  <p className="text-green-500 font-semibold">Paid</p>
+                ) : (
+                  <Link
+                    to={`/deashbord/Payment/${item._id}`}
+                    className="gradient-background  px-4.5 py-1.5 text-white font-bold rounded-md cursor-pointer"
+                  >
+                    Please! Pay
+                  </Link>
+                )}
               </div>
             </div>
           </div>

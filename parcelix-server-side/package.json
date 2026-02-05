@@ -1,5 +1,5 @@
 {
-  "name": "parcelix-server-side",
+  "name": "parcelix-server",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -7,7 +7,11 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "node api/index.js"
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "dependencies": {
     "cors": "^2.8.5",

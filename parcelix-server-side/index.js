@@ -116,10 +116,10 @@ async function run() {
         trackingId,
       });
     });
-    app.get("/paymentHistory" , async (req,res)=>{
-       const cursor=await payment.find().toArray()
-       res.send(cursor)
-    })
+    app.get("/paymentHistory", async (req, res) => {
+      const cursor = await payment.find().toArray();
+      res.send(cursor);
+    });
 
     app.delete("/users/:id", async (req, res) => {
       let id = req.params.id;
@@ -127,15 +127,13 @@ async function run() {
       let result = await mongoUsers.deleteOne(query);
       res.send(result);
     });
-
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!",
-    );
   } finally {
   }
 }
 run().catch(console.dir);
+app.get("/", (req, res) => {
+  res.send("Server is running successfully 🚀");
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
